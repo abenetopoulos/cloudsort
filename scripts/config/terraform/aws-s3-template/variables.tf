@@ -7,5 +7,5 @@ variable "bucket_prefix" {
 variable "bucket_count" {
   type        = number
   description = "the number of buckets to create"
-  default     = 40
+  default     = 7
 }
