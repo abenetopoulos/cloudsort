@@ -14,7 +14,7 @@ provider "aws" {
 
 resource "aws_s3_bucket" "app" {
   count         = var.bucket_count
-  bucket        = "${var.bucket_prefix}-${format("%03d", count.index)}-cloudlab"
+  bucket        = "${var.bucket_prefix}-${format("%03d", count.index)}"
   force_destroy = true
 }
 

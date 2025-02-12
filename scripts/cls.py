@@ -123,6 +123,10 @@ def terraform_provision(cluster_name: str) -> None:
 def get_tf_output(
     cluster_name: str, key: Union[str, List[str]]
 ) -> Union[List[str], List[List[str]]]:
+    # @hack
+    if "instance_ips" in key:
+        return get_cloudlab_ips()
+
     tf_dir = get_or_create_tf_dir(cluster_name, must_exist=True)
     p = shell_utils.run("terraform output -json", cwd=tf_dir, stdout=subprocess.PIPE)
     data = json.loads(p.stdout.decode("ascii"))
@@ -149,9 +153,11 @@ def get_ansible_inventory_content(node_ips: List[str]) -> str:
         host = "node_" + ip.replace(".", "_")
         return host, {"ansible_host": ip}
 
+    hosts_key = "cloudlab" if cfg.cluster.instance_type.cloud == config.Cloud.CLOUDLAB else "all"
+
     hosts = [get_item(ip) for ip in node_ips]
     ret = {
-        "all": {
+        hosts_key: {
             "hosts": dict(hosts),
         },
     }
@@ -349,8 +355,13 @@ def get_current_ip() -> str:
         return shell_utils.run_output("ec2metadata --local-ipv4")
     return socket.gethostbyname(socket.gethostname())
 
+def get_cloudlab_ips() -> List[str]:
+    path = ANSIBLE_DIR / "ansible.cfg"
+    with open(path, 'r') as cfg_file:
+        ansible_cfg = yaml.safe_load(file)
+        return ansible_cfg['cloudlab']
 
-def common_setup(cluster_name: str, cluster_exists: bool) -> pathlib.Path:
+def common_setup(cluster_name: str, cluster_exists: bool, setup_extra: bool = true) -> pathlib.Path:
     head_ip = get_current_ip()
     ips = get_tf_output(cluster_name, "instance_ips")
     inventory_path = get_or_create_ansible_inventory(cluster_name, ips=ips)
@@ -365,8 +376,9 @@ def common_setup(cluster_name: str, cluster_exists: bool) -> pathlib.Path:
         shell_utils.sleep(60, "worker nodes starting up")
     ev = get_ansible_vars()
     run_ansible_playbook(inventory_path, "setup", ev=ev, retries=10)
-    setup_prometheus(head_ip, ips)
-    setup_grafana()
+    if setup_extra:
+        setup_prometheus(head_ip, ips)
+        setup_grafana()
     return inventory_path
 
 
@@ -553,14 +565,19 @@ def up(
 ):
     pip_install_upgrade()
     cluster_name = get_cluster_name()
-    cluster_exists = check_cluster_existence(cluster_name)
-    config_exists = os.path.exists(get_tf_dir(cluster_name))
-    if cluster_exists and not config_exists:
-        shell_utils.error(
-            f"{cluster_name} exists on the cloud but nothing is found locally"
-        )
-    terraform_provision(cluster_name)
-    inventory_path = common_setup(cluster_name, cluster_exists)
+
+    setup_extra = True
+    if cfg.cluster.instance_type.cloud == config.Cloud.CLOUDLAB:
+        setup_extra = False
+    else:
+        cluster_exists = check_cluster_existence(cluster_name)
+        config_exists = os.path.exists(get_tf_dir(cluster_name))
+        if cluster_exists and not config_exists:
+            shell_utils.error(
+                f"{cluster_name} exists on the cloud but nothing is found locally"
+            )
+        terraform_provision(cluster_name)
+    inventory_path = common_setup(cluster_name, cluster_exists, setup_extra)
     if ray:
         restart_ray(
             inventory_path,
@@ -585,10 +602,15 @@ def setup(
     no_common: bool,
 ):
     cluster_name = get_cluster_name()
+
+    setup_extra = True
+    if cfg.cluster.instance_type.cloud == config.Cloud.CLOUDLAB:
+        setup_extra = False
+
     if no_common:
         inventory_path = get_or_create_ansible_inventory(cluster_name)
     else:
-        inventory_path = common_setup(cluster_name, True)
+        inventory_path = common_setup(cluster_name, True, setup_extra)
     if ray:
         restart_ray(
             inventory_path,

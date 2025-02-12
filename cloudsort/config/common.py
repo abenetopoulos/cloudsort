@@ -31,6 +31,7 @@ def get_s3_buckets(count: int = 10) -> List[str]:
 class Cloud(enum.Enum):
     AWS = "aws"
     AZURE = "azure"
+    CLOUDLAB = "cloudlab"
 
 
 @dataclass

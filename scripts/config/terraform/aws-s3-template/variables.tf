@@ -1,7 +1,7 @@
 variable "bucket_prefix" {
   type        = string
   description = "bucket prefix"
-  default     = "cloudsort"
+  default     = "cloudsort-cloudlab"
 }
 
 variable "bucket_count" {
