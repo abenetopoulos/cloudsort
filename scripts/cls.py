@@ -7,6 +7,7 @@ import signal
 import socket
 import string
 import subprocess
+import configparser
 from typing import Dict, List, Optional, Tuple, Union
 
 import boto3
@@ -357,11 +358,11 @@ def get_current_ip() -> str:
 
 def get_cloudlab_ips() -> List[str]:
     path = ANSIBLE_DIR / "ansible.cfg"
-    with open(path, 'r') as cfg_file:
-        ansible_cfg = yaml.safe_load(file)
-        return ansible_cfg['cloudlab']
+    config = configparser.ConfigParser()
+    config.read(path)
+    return json.loads(config.get('cloudlab', 'hosts'))
 
-def common_setup(cluster_name: str, cluster_exists: bool, setup_extra: bool = true) -> pathlib.Path:
+def common_setup(cluster_name: str, cluster_exists: bool, setup_extra: bool = True) -> pathlib.Path:
     head_ip = get_current_ip()
     ips = get_tf_output(cluster_name, "instance_ips")
     inventory_path = get_or_create_ansible_inventory(cluster_name, ips=ips)
@@ -569,6 +570,7 @@ def up(
     setup_extra = True
     if cfg.cluster.instance_type.cloud == config.Cloud.CLOUDLAB:
         setup_extra = False
+        cluster_exists = True
     else:
         cluster_exists = check_cluster_existence(cluster_name)
         config_exists = os.path.exists(get_tf_dir(cluster_name))
