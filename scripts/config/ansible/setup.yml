@@ -69,11 +69,11 @@
         fstype: tmpfs
         state: mounted
 
-    - name: Sync aws directory
-      ansible.posix.synchronize:
-        src: "{{ awsdir }}/"
-        dest: "{{ awsdir }}"
-        delete: true
+        # - name: Sync aws directory
+        #   ansible.posix.synchronize:
+        #     src: "{{ awsdir }}/"
+        #     dest: "{{ awsdir }}"
+        #     delete: true
 
     - name: Sync workdir
       ansible.posix.synchronize:
@@ -109,11 +109,11 @@
         - hard
         - soft
 
-    - name: Check Hadoop files exist
-      delegate_to: localhost
-      ansible.builtin.stat:
-        path: "{{ hadoop_config_dir }}"
-      register: hadoop
+        # - name: Check Hadoop files exist
+        #   delegate_to: localhost
+        #   ansible.builtin.stat:
+        #     path: "{{ hadoop_config_dir }}"
+        #   register: hadoop
 
     - name: Sync hosts file
       become: true
@@ -123,13 +123,13 @@
         mode: "0644"
       when: hadoop.stat.exists
 
-    - name: Sync Hadoop config files
-      ansible.builtin.copy:
-        src: "{{ hadoop_config_dir }}/{{ item }}"
-        dest: "{{ hadoop_config_dir }}/{{ item }}"
-        mode: "0644"
-      loop:
-        - core-site.xml
-        - hdfs-site.xml
-        - yarn-site.xml
-      when: hadoop.stat.exists
+      # - name: Sync Hadoop config files
+      #   ansible.builtin.copy:
+      #     src: "{{ hadoop_config_dir }}/{{ item }}"
+      #     dest: "{{ hadoop_config_dir }}/{{ item }}"
+      #     mode: "0644"
+      #   loop:
+      #     - core-site.xml
+      #     - hdfs-site.xml
+      #     - yarn-site.xml
+      #   when: hadoop.stat.exists
