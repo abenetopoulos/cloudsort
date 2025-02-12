@@ -214,7 +214,7 @@ def run_ansible_playbook(
 def get_data_disks() -> List[str]:
     offset = cfg.cluster.instance_type.disk_device_offset
     return [
-        f"/dev/nvme{i + offset}n1" for i in range(cfg.cluster.instance_type.disk_count)
+        f"/dev/nvme0n{i + offset}p3" for i in range(cfg.cluster.instance_type.disk_count)
     ]
 
 
