@@ -11,6 +11,7 @@
     awsdir: ~/.aws
     workdir: ~/cloudsort
     pythondir: ~/.pyenv/shims/
+    pyenv_bin: ~/.pyenv/bin/pyenv
     hosts_path: /etc/hosts
     hadoop_config_dir: /opt/hadoop/etc/hadoop
   environment:
@@ -105,8 +106,8 @@
 
     - name: Install Python
       ansible.builtin.shell: |
-        pyenv install 3.9.13
-        pyenv global 3.9.13
+        {{ pyenv_bin }} install 3.9.13
+        {{ pyenv_bin }} global 3.9.13
       changed_when: true
 
     - name: Install Python dependencies
