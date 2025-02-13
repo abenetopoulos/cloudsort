@@ -8,7 +8,7 @@
       - /mnt/data0
     tmpfs_path: /mnt/tmpfs
     workdir: ~/cloudsort
-    pythondir: ~/miniconda3/envs/raysort/bin
+    pythondir: ~/.pyenv/shims/
     clear_data_dir: false
     ray_object_manager_port: 8076
     ray_merics_export_port: 8090
@@ -31,6 +31,11 @@
         state: remounted
         opts: "size={{ shared_memory_bytes }}"
       when: tmpfs_path
+
+    - name: Ship keys
+      ansible.posix.synchronize:
+        src: "~/.ssh/id_ed25519"
+        dest: "~/.ssh/id_ed25519"
 
     - name: Sync Ray patches
       ansible.posix.synchronize:
