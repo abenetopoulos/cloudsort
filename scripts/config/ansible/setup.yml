@@ -17,8 +17,9 @@
   environment:
     CC: /opt/intel/oneapi/compiler/latest/bin/icx
     CXX: /opt/intel/oneapi/compiler/latest/bin/icpx
-    CFLAGS: "-Ofast -xHost -ipo"
-    CXXFLAGS: "-Ofast -xHost -ipo"
+    CFLAGS: "-Ofast -xHost"
+    CXXFLAGS: "-Ofast -xHost"
+    LD_LIBRARY_PATH: /opt/intel/oneapi/compiler/latest/lib/
   tasks:
     - name: Create a filesystem on each of the data disks
       become: true
@@ -157,7 +158,7 @@
         src: "{{ hosts_path }}"
         dest: "{{ hosts_path }}"
         mode: "0644"
-      when: hadoop.stat.exists
+        # when: hadoop.stat.exists
 
       # - name: Sync Hadoop config files
       #   ansible.builtin.copy:
