@@ -115,7 +115,7 @@ def generate_part(
         pinfo = part_info(cfg, part_id)
         path = os.path.join(constants.TMPFS_PATH, f"{part_id:010x}")
         pinfo.size = size * constants.RECORD_SIZE
-        pinfo.checksum = _run_gensort(offset, size, path, cfg.cloud_storage)
+        pinfo.checksum = _run_gensort(offset, size, path, cfg.cloud_storage, skewed=bool(cfg.skewed))
         s3_utils.upload(
             path,
             pinfo,

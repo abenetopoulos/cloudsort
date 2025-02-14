@@ -152,6 +152,8 @@ class AppConfig:
     azure_containers: str = ""
     cloud_storage: bool = field(init=False)
 
+    skewed: bool = False
+
     fail_node: Optional[str] = None
     fail_time: int = 45
 

@@ -56,6 +56,45 @@ configs = [
         ),
     ),
     JobConfig(
+        name="128gb-2gb-skewed-m510",
+        cluster=dict(
+            instance_count=7,
+            instance_type=m510,
+        ),
+        system=dict(
+        ),
+        app=dict(
+            **get_steps(),
+            total_gb=128,
+            input_part_gb=2,
+            output_part_gb=4,
+            s3_buckets=get_s3_buckets(7),
+            map_parallelism_multiplier=0.75,
+            reduce_parallelism_multiplier=0.75,
+            merge_factor=1,
+            skewed=True,
+        ),
+    ),
+    JobConfig(
+        name="200gb-2gb-skewed-m510",
+        cluster=dict(
+            instance_count=7,
+            instance_type=m510,
+        ),
+        system=dict(),
+        app=dict(
+            **get_steps(),
+            total_gb=200,
+            input_part_gb=2,
+            output_part_gb=4,
+            s3_buckets=get_s3_buckets(7),
+            map_parallelism_multiplier=0.75,
+            reduce_parallelism_multiplier=0.75,
+            merge_factor=1,
+            skewed=True,
+        ),
+    ),
+    JobConfig(
         name="1tb-2gb-m510",
         cluster=dict(
             instance_count=7,
