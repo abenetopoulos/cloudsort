@@ -21,6 +21,7 @@
     LD_LIBRARY_PATH: "s3://{{ lookup('env', 'LD_LIBRARY_PATH') }}"
     RAY_STORAGE: "s3://{{ lookup('env', 'S3_BUCKET') }}"
     S3_BUCKET: "{{ lookup('env', 'S3_BUCKET') }}"
+    LD_LIBRARY_PATH: /opt/intel/oneapi/compiler/latest/lib/
   tasks:
     - name: Remount /dev/shm
       become: true
