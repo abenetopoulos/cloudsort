@@ -274,6 +274,7 @@ def sort_optimized(cfg: AppConfig, parts: list[PartInfo]) -> list[PartInfo]:
         map_scheduler.register_task(task, node_id)
         return task
 
+    logging.info("Starting map phase")
     # Main map-merge loop.
     all_map_out = []
     for map_id in range(cfg.num_mappers):
