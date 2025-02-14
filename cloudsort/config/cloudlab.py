@@ -10,33 +10,53 @@ from cloudsort.config.common import (
 
 m510 = InstanceType(
     name="m510",
-    cpu=8,
+    cpu=16,
     # FIXME might need to be 59.6
-    memory_gib=64,
+    memory_gib=59.6,
     disk_count=1,
     cloud=Cloud.CLOUDLAB,
 )
 
 configs = [
     JobConfig(
-        name="600gb-86gb-m510",
+        name="128gb-2gb-m510",
         cluster=dict(
             instance_count=7,
             instance_type=m510,
         ),
         system=dict(
-            max_fused_object_count=3,
-            s3_spill=16,
         ),
         app=dict(
             **get_steps(),
-            total_gb=600,
-            input_part_gb=85.72,
-            s3_buckets=get_s3_buckets(),
+            total_gb=128,
+            input_part_gb=2,
+            output_part_gb=4,
+            s3_buckets=get_s3_buckets(7),
+            map_parallelism_multiplier=0.75,
+            reduce_parallelism_multiplier=0.75,
+            merge_factor=1,
         ),
     ),
     JobConfig(
-        name="1tb-143gb-m510",
+        name="200gb-2gb-m510",
+        cluster=dict(
+            instance_count=7,
+            instance_type=m510,
+        ),
+        system=dict(),
+        app=dict(
+            **get_steps(),
+            total_gb=200,
+            input_part_gb=2,
+            output_part_gb=4,
+            s3_buckets=get_s3_buckets(7),
+            map_parallelism_multiplier=0.75,
+            reduce_parallelism_multiplier=0.75,
+            merge_factor=1,
+        ),
+    ),
+    JobConfig(
+        name="1tb-2gb-m510",
         cluster=dict(
             instance_count=7,
             instance_type=m510,
@@ -46,11 +66,12 @@ configs = [
         app=dict(
             **get_steps(),
             total_gb=1000,
-            input_part_gb=142.86,
-            map_parallelism_multiplier=1,
-            reduce_parallelism_multiplier=1,
-            s3_buckets=get_s3_buckets(),
-            native_scheduling=True,
+            input_part_gb=2,
+            output_part_gb=4,
+            s3_buckets=get_s3_buckets(7),
+            map_parallelism_multiplier=0.75,
+            reduce_parallelism_multiplier=0.75,
+            merge_factor=1,
         ),
     ),
 ]
