@@ -4,8 +4,8 @@
   strategy: free
   vars:
     data_disks:
-      - /dev/nvme1n1
-    fstype: xfs
+      - /dev/nvme0n1p3
+    fstype: ext3
     mnt_prefix: /mnt/data
     tmpfs_path: /mnt/tmpfs
     awsdir: ~/.aws

@@ -40,7 +40,7 @@
     - name: Sync Ray patches
       ansible.posix.synchronize:
         src: "{{ workdir }}/ray-patch/"
-        dest: "{{ pythondir }}/../lib/python3.9/site-packages/ray/"
+        dest: "{{ pythondir }}/../versions/3.9.13/lib/python3.9/site-packages/ray/"
 
     - name: Clear tmpfs
       ansible.builtin.file:

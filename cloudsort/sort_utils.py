@@ -84,12 +84,17 @@ def _get_part_path(
     return os.path.join(*parts)
 
 
-def _run_gensort(offset: int, size: int, path: str, buf: bool = False) -> str:
+def _run_gensort(offset: int, size: int, path: str, buf: bool = False, skewed: bool = False) -> str:
     # Add `,buf` to use buffered I/O instead of direct I/O (for tmpfs).
     if buf:
         path += ",buf"
+
+    skew_flag = ""
+    if skewed:
+        skew_flag = "-s"
+
     proc = subprocess.run(
-        f"{constants.GENSORT_PATH} -c -b{offset} {size} {path}",
+        f"{constants.GENSORT_PATH} -c {skew_flag} -b{offset} {size} {path}",
         shell=True,
         check=True,
         stderr=subprocess.PIPE,
