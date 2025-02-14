@@ -352,6 +352,8 @@ def get_cluster_name() -> str:
 
 
 def get_current_ip() -> str:
+    if cfg.cluster.instance_type.cloud == config.Cloud.CLOUDLAB:
+        return socket.gethostbyname(socket.gethostname().split('.')[0])
     if cfg.cluster.instance_type.cloud == config.Cloud.AWS:
         return shell_utils.run_output("ec2metadata --local-ipv4")
     return socket.gethostbyname(socket.gethostname())

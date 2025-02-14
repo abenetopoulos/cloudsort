@@ -144,8 +144,9 @@ class MergeController:
 
     def _close_current_merger(self):
         refs = self._current_merger.merge.options(
-            num_returns=self.cfg.num_reducers_per_worker + 1
+            num_returns="dynamic"
         ).remote()
+        refs = list(ray.get(refs))
         self._merge_tasks[refs[-1]] = self._current_merger
         self._merge_results.append(refs[:-1])
         self._current_merger = self._get_merger()
